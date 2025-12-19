@@ -16,6 +16,7 @@ builder.Services.AddValidatorsFromAssembly(assembly);
 builder.Services.AddMarten(opts =>
 {
     opts.Connection(connectionString: builder.Configuration.GetConnectionString("Database")!);
+    opts.DisableNpgsqlLogging = true;
 }).UseLightweightSessions();
 
 if (builder.Environment.IsDevelopment())

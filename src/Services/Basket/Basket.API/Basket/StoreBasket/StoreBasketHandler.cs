@@ -17,10 +17,10 @@ namespace Basket.API.Basket.StoreBasket
     {
         public async Task<StoreBasketResult> Handle(StoreBasketCommand command, CancellationToken cancellationToken)
         {
-            ShoppingCart cart = command.Cart;
 
+
+            // Store basket in database (use Marten upsert - if exist = update, if not, insert)
             await repository.StoreBasket(command.Cart, cancellationToken);
-
 
             return new StoreBasketResult(command.Cart.UserName);
         }

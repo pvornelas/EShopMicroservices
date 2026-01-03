@@ -41,8 +41,8 @@
                 billingAddress: billingAddress,
                 payment: Payment.Of(orderDto.Payment.CardName,
                                     orderDto.Payment.CardNumber,
-                                    orderDto.Payment.Cvv,
                                     orderDto.Payment.Expiration,
+                                    orderDto.Payment.Cvv,
                                     orderDto.Payment.PaymentMethod)
             );
 

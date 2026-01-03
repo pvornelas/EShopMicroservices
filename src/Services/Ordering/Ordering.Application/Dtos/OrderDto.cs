@@ -1,13 +1,11 @@
-﻿using Ordering.Domain.Enum;
-
-namespace Ordering.Application.Dtos
+﻿namespace Ordering.Application.Dtos
 {
     public record OrderDto(
         Guid Id,
         Guid CustomerId,
         string OrderName,
         AddressDto ShippingAddress,
-        AddressDto BillingAdress,
+        AddressDto BillingAddress,
         PaymentDto Payment,
         OrderStatus Status,
         List<OrderItemDto> OrderItems);

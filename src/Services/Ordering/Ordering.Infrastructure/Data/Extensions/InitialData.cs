@@ -53,7 +53,7 @@
                         id: OrderId.Of(Guid.Parse("11111111-1111-1111-1111-111111111111")),
                         customerId: CustomerId.Of(Guid.Parse("8f5f3e9a-6a4f-4d6d-9c1f-1d8f3a2b4c10")),
                         orderName: OrderName.Of("OR001"),
-                        shippingAdress: Address.Of(
+                        shippingAddress: Address.Of(
                             fisrtName: "Ana",
                             lastName: "Souza",
                             emailAdress: "ana.souza@email.com",
@@ -62,7 +62,7 @@
                             state: "SP",
                             zipCode: "04567-000"
                         ),
-                        billingAdress: Address.Of(
+                        billingAddress: Address.Of(
                             fisrtName: "Ana",
                             lastName: "Souza",
                             emailAdress: "ana.souza@email.com",
@@ -93,7 +93,7 @@
                         id: OrderId.Of(Guid.Parse("22222222-2222-2222-2222-222222222222")),
                         customerId: CustomerId.Of(Guid.Parse("1b2c3d4e-5f60-4a7b-8c9d-0e1f2a3b4c5d")), // mesmo Customer 2
                         orderName: OrderName.Of("OR002"),
-                        shippingAdress: Address.Of(
+                        shippingAddress: Address.Of(
                             fisrtName: "Bruno",
                             lastName: "Lima",
                             emailAdress: "bruno.lima@email.com",
@@ -102,7 +102,7 @@
                             state: "SP",
                             zipCode: "01310-100"
                         ),
-                        billingAdress: Address.Of(
+                        billingAddress: Address.Of(
                             fisrtName: "Bruno",
                             lastName: "Lima",
                             emailAdress: "bruno.lima@email.com",

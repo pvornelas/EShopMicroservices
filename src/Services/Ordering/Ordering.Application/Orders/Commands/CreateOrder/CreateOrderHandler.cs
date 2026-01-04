@@ -17,7 +17,7 @@
         {
             var shippingAddress = Address.Of(orderDto.ShippingAddress.FirstName,
                 orderDto.ShippingAddress.LastName,
-                orderDto.ShippingAddress.EmailAdress,
+                orderDto.ShippingAddress.EmailAddress,
                 orderDto.ShippingAddress.AddressLine,
                 orderDto.ShippingAddress.Country,
                 orderDto.ShippingAddress.State,
@@ -26,7 +26,7 @@
 
             var billingAddress = Address.Of(orderDto.BillingAddress.FirstName,
                 orderDto.BillingAddress.LastName,
-                orderDto.BillingAddress.EmailAdress,
+                orderDto.BillingAddress.EmailAddress,
                 orderDto.BillingAddress.AddressLine,
                 orderDto.BillingAddress.Country,
                 orderDto.BillingAddress.State,

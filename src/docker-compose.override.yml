@@ -37,6 +37,8 @@ services:
     restart: always
     ports:
       - "1433:1433"
+    volumes:
+      - mssql_ordering:/var/opt/mssql
   
   messagebroker:
     container_name: messagebroker

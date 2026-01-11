@@ -41,3 +41,4 @@ services:
 volumes:
    postgres_catalog:
    postgres_basket:
+   mssql_ordering:

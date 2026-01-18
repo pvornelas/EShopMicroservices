@@ -1,3 +1,5 @@
+using BuildingBlocks.Exceptions.Extensions;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to container
@@ -22,7 +24,8 @@ builder.Services.AddMarten(opts =>
 if (builder.Environment.IsDevelopment())
     builder.Services.InitializeMartenWith<CatalogInitialData>();
 
-builder.Services.AddExceptionHandler<CustomExceptionHandler>();
+// Cross-Cutting Services
+builder.Services.AddBuildingBlocksExceptionHandling(builder.Environment);
 
 builder.Services.AddHealthChecks()
     .AddNpgSql(builder.Configuration.GetConnectionString("Database")!);
@@ -32,7 +35,7 @@ var app = builder.Build();
 // Configure the HTTP request pipeline
 app.MapCarter();
 
-app.UseExceptionHandler(options => { });
+app.UseBuildingBlocksExceptionHandling();
 
 app.UseHealthChecks("/health",
     new HealthCheckOptions

@@ -1,3 +1,4 @@
+using BuildingBlocks.Exceptions.Extensions;
 using BuildingBlocks.Messaging.MassTransit;
 using Discount.Grpc;
 using HealthChecks.UI.Client;
@@ -52,7 +53,7 @@ builder.Services.AddGrpcClient<DiscountProtoService.DiscountProtoServiceClient>(
 builder.Services.AddMessageBroker(builder.Configuration);
 
 // Cross-Cutting Services
-builder.Services.AddExceptionHandler<CustomExceptionHandler>();
+builder.Services.AddBuildingBlocksExceptionHandling(builder.Environment);
 
 builder.Services.AddHealthChecks()
     .AddNpgSql(builder.Configuration.GetConnectionString("Database")!)
@@ -62,7 +63,9 @@ var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 app.MapCarter();
-app.UseExceptionHandler(options => { });
+
+app.UseBuildingBlocksExceptionHandling();
+
 app.UseHealthChecks("/health", new HealthCheckOptions
 {
     ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse

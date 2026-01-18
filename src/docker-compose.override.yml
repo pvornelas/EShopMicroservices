@@ -37,6 +37,12 @@ services:
     restart: always
     ports:
       - "1433:1433"
+    healthcheck:
+      test: ["CMD", "/opt/mssql-tools/bin/sqlcmd", "-S", "orderdb", "-U", "sa", "-P", "PvO12345678", "-Q", "SELECT 1;"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
     volumes:
       - mssql_ordering:/var/opt/mssql
   
@@ -113,11 +119,27 @@ services:
       - MessageBroker__Password=guest
       - FeatureManagement__OrderFullfilment=false
     depends_on:
-      - orderdb        
-      - messagebroker        
+      - orderdb
+      - messagebroker
     ports:
       - "6003:8080"
       - "6063:8081"
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+
+  yarpapigateway:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=8080
+      - ASPNETCORE_HTTPS_PORTS=8081
+    depends_on:
+      - catalog.api
+      - basket.api
+      - ordering.api
+    ports:
+      - "6004:8080"
+      - "6064:8081"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro      
       - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro

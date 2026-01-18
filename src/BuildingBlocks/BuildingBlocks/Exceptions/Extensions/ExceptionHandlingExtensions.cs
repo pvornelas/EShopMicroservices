@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System.Diagnostics;
 
 namespace BuildingBlocks.Exceptions.Extensions;
 public static class ExceptionHandlingExtensions
@@ -15,8 +16,17 @@ public static class ExceptionHandlingExtensions
         {
             options.CustomizeProblemDetails = ctx =>
             {
-                // Sempre: traceId
-                ctx.ProblemDetails.Extensions["traceId"] = ctx.HttpContext.TraceIdentifier;
+                var activity = Activity.Current;
+                if (activity is not null)
+                {
+                    // traceId do Activity (OpenTelemetry)
+                    ctx.ProblemDetails.Extensions["traceId"] = activity.TraceId.ToString();
+                    ctx.ProblemDetails.Extensions["spanId"] = activity.SpanId.ToString();
+                }
+                else
+                {
+                    ctx.ProblemDetails.Extensions["traceId"] = ctx.HttpContext.TraceIdentifier;
+                }
 
                 // Sempre: correlationId (header ou traceId)
                 var correlationId =
@@ -30,7 +40,6 @@ public static class ExceptionHandlingExtensions
                 // Opcional: ecoa correlation id na resposta
                 ctx.HttpContext.Response.Headers[CorrelationHeader] = correlationId;
 
-                // Sempre: timestamp
                 ctx.ProblemDetails.Extensions["timestampUtc"] = DateTime.UtcNow.ToString("O");
 
                 // Somente DEV: detalhes técnicos (stack trace etc.)
@@ -46,7 +55,6 @@ public static class ExceptionHandlingExtensions
             };
         });
 
-        // 2) Handler moderno de exceções (IExceptionHandler)
         services.AddExceptionHandler<CustomExceptionHandler>();
 
         return services;
@@ -54,8 +62,7 @@ public static class ExceptionHandlingExtensions
 
     public static IApplicationBuilder UseBuildingBlocksExceptionHandling(this IApplicationBuilder app)
     {
-        // O middleware que dispara o fluxo de tratamento de exceções
-        app.UseExceptionHandler(_ => { }); // delegate vazio é ok com IExceptionHandler registrado
+        app.UseExceptionHandler(_ => { });
         return app;
     }
 

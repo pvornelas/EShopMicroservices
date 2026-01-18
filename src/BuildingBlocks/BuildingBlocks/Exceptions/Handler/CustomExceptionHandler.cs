@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using System.Text.Json;
 
 namespace BuildingBlocks.Exceptions.Handler
 {
@@ -88,8 +89,6 @@ namespace BuildingBlocks.Exceptions.Handler
         {
             var isDev = env.IsDevelopment();
 
-            // Sugestão: use URIs estáveis para "type" (documentáveis)
-            // Pode ser um domínio interno, ou até paths do seu próprio swagger/docs.
             return ex switch
             {
                 NotFoundException nf => new MappedProblem(
@@ -107,10 +106,16 @@ namespace BuildingBlocks.Exceptions.Handler
                     Type: "https://errors.localhost/bad-request",
                     Detail: br.Message,
                     Code: "BAD_REQUEST",
-                    // Details é "seguro" para expor? Depende do seu padrão:
-                    // - DEV: pode expor Details
-                    // - PROD: expor só se você tiver certeza que não contém dados internos
                     ExtraDetails: isDev ? br.Details : null
+                ),
+
+                BadHttpRequestException bhe => new MappedProblem(
+                    StatusCodes.Status400BadRequest,
+                    Title: "Requisição inválida",
+                    Type: "https://errors.localhost/bad-request",
+                    Detail: isDev ? bhe.Message : "A requisição possui dados inválidos.",
+                    Code: "BAD_REQUEST",
+                    ExtraDetails: isDev ? bhe.GetType().FullName : null
                 ),
 
                 ValidationException ve => new MappedProblem(
@@ -122,19 +127,27 @@ namespace BuildingBlocks.Exceptions.Handler
                     ExtraDetails: isDev ? ve.Message : null
                 ),
 
+                JsonException je => new MappedProblem(
+                    StatusCodes.Status400BadRequest,
+                    Title: "JSON inválido",
+                    Type: "https://errors.localhost/invalid-json",
+                    Detail: isDev ? je.Message : "O JSON enviado é inválido.",
+                    Code: "INVALID_JSON",
+                    ExtraDetails: isDev ? je.Path : null
+                ),
+
                 InternalServerException ise => new MappedProblem(
                     StatusCodes.Status500InternalServerError,
                     Title: "Erro interno",
                     Type: "https://errors.localhost/internal",
-                    // Em PROD, nunca vaze detalhe interno em 500
                     Detail: isDev ? ise.Message : "Ocorreu um erro inesperado. Se persistir, contate o suporte.",
                     Code: "INTERNAL_ERROR",
                     ExtraDetails: isDev ? ise.Details : null
                 ),
 
-                // Timeouts/cancelamentos - opcional (ajuste conforme seu padrão)
+                // Timeouts/cancelamentos
                 OperationCanceledException => new MappedProblem(
-                    StatusCodes.Status499ClientClosedRequest, // não existe constante no StatusCodes
+                    StatusCodes.Status499ClientClosedRequest,
                     Title: "Requisição cancelada",
                     Type: "https://errors.localhost/request-cancelled",
                     Detail: "A requisição foi cancelada.",
